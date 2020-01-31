@@ -3,6 +3,8 @@ _Kazan QA meetup_
 
 ## presentation
 
+[presentation](https://docs.google.com/presentation/d/1obNE39mek5xZFz2g_NLse1w38ashupXYPFd4t1k6pCA/edit?usp=sharing\)
+
 ## how to run
 
 #### run SUT
