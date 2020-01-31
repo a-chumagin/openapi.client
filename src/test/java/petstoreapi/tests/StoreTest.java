@@ -27,20 +27,22 @@ public class StoreTest {
     }
 
     @Test
-    public void storeIncreasingTests() throws ApiException {
+    public void storeIncreasingTest() throws ApiException {
         Map<String, Integer> result_before = apiInstance.getInventory();
         Integer quantity = 5;
         Order.StatusEnum order_status = Order.StatusEnum.APPROVED;
         Long id = getID();
         Order order = new Order().id(id).petId(198772L).
-                quantity(quantity).status(order_status).complete(true).shipDate(OffsetDateTime.parse("2020-01-13T21:04:23.797Z"));
+                quantity(quantity).
+                status(order_status).complete(true).
+                shipDate(OffsetDateTime.parse("2020-01-13T21:04:23.797Z"));
         apiInstance.placeOrder(order);
         Map<String, Integer> result_after = apiInstance.getInventory();
         assertEquals(getApprovedQuantity(result_after), (getApprovedQuantity(result_before) + quantity));
     }
 
     @Test
-    public void notExistedStoreId() {
+    public void notExistedStoreIdTest() {
         ApiException exception = Assertions.assertThrows(ApiException.class, () -> {
             apiInstance.getOrderById(1234567890L);
         });
@@ -48,13 +50,33 @@ public class StoreTest {
     }
 
     @Test
-    public void deleteOrder(){
+    public void getOrderTest() throws ApiException {
+        Order order = buildOrder();
+        Order response_order = apiInstance.placeOrder(order);
+        Order actualOrder = apiInstance.getOrderById(response_order.getId());
+        assertEquals(actualOrder.getId(), response_order.getId());
+    }
+
+    @Test
+    public void deleteOrderTest() throws ApiException {
+        Order order = buildOrder();
+        Order response_order = apiInstance.placeOrder(order);
+        apiInstance.deleteOrder(response_order.getId());
+        ApiException exception = Assertions.assertThrows(ApiException.class, () -> {
+            apiInstance.getOrderById(response_order.getId());
+        });
+        assertEquals(exception.getResponseBody(), "Order not found");
+    }
+
+    private Order buildOrder() {
         Integer quantity = 5;
         Order.StatusEnum order_status = Order.StatusEnum.APPROVED;
         Long id = getID();
-        Order order = new Order().id(id).petId(198772L).
-                quantity(quantity).status(order_status).complete(true).shipDate(OffsetDateTime.parse("2020-01-13T21:04:23.797Z"));
-//        Order response_order = apiInstance.placeOrder(order);
+        return new Order().id(id).petId(198772L).
+                quantity(quantity).
+                status(order_status).
+                complete(true).
+                shipDate(OffsetDateTime.parse("2020-01-13T21:04:23.797Z"));
     }
 
     private Integer getApprovedQuantity(Map<String, Integer> inventory) {
@@ -66,7 +88,6 @@ public class StoreTest {
     }
 
     private Long getID() {
-        long generatedLong = new Random().nextLong();
-        return generatedLong;
+        return new Random().nextLong();
     }
 }
